@@ -1,133 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>AI Gaming Tips Hub</title>
-
-<style>
-body{
-    font-family:Arial,sans-serif;
-    background:#1e3c72;
-    color:white;
-    text-align:center;
-    padding:40px;
-}
-
-.container{
-    max-width:900px;
-    margin:auto;
-}
-
-input{
-    width:70%;
-    padding:12px;
-    font-size:18px;
-    border:none;
-    border-radius:5px;
-}
-
-button{
-    padding:12px 20px;
-    font-size:18px;
-    border:none;
-    border-radius:5px;
-    background:green;
-    color:white;
-    cursor:pointer;
-}
-
-#result{
-    margin-top:20px;
-    background:#ffffff22;
-    padding:20px;
-    border-radius:10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Coach AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        }
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        input {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid #4b5563 !important;
+            color: white !important;
+        }
+        input::placeholder { color: #9ca3af; }
+        #result {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 4px solid #3b82f6;
+            color: #e5e7eb;
+        }
+    </style>
 </head>
+<body class="min-h-screen flex items-center justify-center p-4">
 
-<body>
+    <div class="max-w-md w-full game-card p-8 rounded-2xl shadow-2xl">
+        <h1 class="text-2xl font-bold mb-6 text-center text-blue-400">🎮 Game Coach AI</h1>
+        
+        <input id="game" class="w-full p-3 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Enter game name...">
+        
+        <button onclick="getTips()" id="btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg font-semibold transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100">
+            Get Strategy Tips
+        </button>
+        
+        <div id="result" class="mt-6 p-4 rounded-lg hidden whitespace-pre-wrap"></div>
+    </div>
 
-<div class="container">
+    <script>
+        async function getTips() {
+            const game = document.getElementById('game').value;
+            const resDiv = document.getElementById('result');
+            const btn = document.getElementById('btn');
+            
+            if (!game) return alert("Please enter a game name!");
 
-<h1>🎮 AI Gaming Tips Hub</h1>
-
-<input
-id="gameInput"
-type="text"
-placeholder="Enter game name">
-
-<button onclick="searchGame()">
-Search
-</button>
-
-<div id="result">
-Enter a game name and click Search.
-</div>
-
-</div>
-
-<script>
-
-async function searchGame(){
-
-const game =
-document.getElementById("gameInput").value;
-
-const result =
-document.getElementById("result");
-
-if(!game){
-    result.innerHTML =
-    "Please enter a game name.";
-    return;
-}
-
-result.innerHTML = "Loading...";
-
-try{
-
-const response = await fetch(
-"https://ai-gaming-tips-hub-production.up.railway.app/tips",
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-game:game
-})
-}
-);
-
-const data =
-await response.json();
-
-if(data.error){
-
-result.innerHTML =
-"<b>Error:</b> " +
-data.error;
-
-}else{
-
-result.innerHTML =
-"<h3>" + game + "</h3><hr>" +
-data.tips;
-
-}
-
-}catch(error){
-
-result.innerHTML =
-"Could not connect to AI server.";
-
-}
-
-}
-
-</script>
-
+            btn.disabled = true;
+            btn.innerText = "Consulting Coach...";
+            
+            try {
+                const response = await fetch('http://localhost:3000/tips', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ game })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resDiv.innerText = data.tips;
+                    resDiv.classList.remove('hidden');
+                } else {
+                    alert("Error: " + (data.error || "Unknown error"));
+                }
+            } catch (e) { 
+                alert("Error connecting to server. Make sure your server is running."); 
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Get Strategy Tips";
+            }
+        }
+    </script>
 </body>
 </html>
