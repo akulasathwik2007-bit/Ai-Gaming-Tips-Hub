@@ -15,6 +15,7 @@ app.get("/", (req, res) => {
   res.json({
     status:"working",
     keyExists: !!process.env.GROQ_API_KEY
+    
   });
 });
 app.post("/tips", async (req, res) => {
