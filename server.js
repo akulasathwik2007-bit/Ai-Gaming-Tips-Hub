@@ -13,9 +13,7 @@ const groq = new Groq({
 });
 app.get("/", (req, res) => {
   res.json({
-    status:"working",
-    keyExists: !!process.env.GROQ_API_KEY
-    
+    status: "working"
   });
 });
 app.post("/tips", async (req, res) => {
@@ -44,6 +42,6 @@ app.post("/tips", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
