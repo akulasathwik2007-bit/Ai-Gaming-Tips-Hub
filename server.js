@@ -11,29 +11,37 @@ app.use(express.json());
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY
 });
+
 app.get("/", (req, res) => {
   res.json({
     status: "working"
   });
 });
+
 app.post("/tips", async (req, res) => {
   try {
+    console.log("Request received:", req.body);
+
     const game = req.body.game;
 
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content: `Give useful gaming tips for ${game}`
-        }
-      ],
-      model: "llama-3.1-8b-instant"
-    });
+    const chatCompletion =
+      await groq.chat.completions.create({
+        messages: [
+          {
+            role: "user",
+            content: `Give useful gaming tips for ${game}`
+          }
+        ],
+        model: "llama-3.1-8b-instant"
+      });
 
     res.json({
       tips: chatCompletion.choices[0].message.content
     });
+
   } catch (error) {
+    console.error("FULL ERROR:", error);
+
     res.status(500).json({
       error: error.message
     });
